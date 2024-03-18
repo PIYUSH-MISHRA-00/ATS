@@ -1,52 +1,32 @@
-import tkinter as tk
-from tkinter import filedialog
-import fitz  # Import PyMuPDF
+import streamlit as st
+import PyPDF2
 
 class ApplicantTrackingSystem:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Applicant Tracking System")
-
-        # Create widgets
-        self.file_label = tk.Label(root, text="Upload Resume:")
-        self.upload_button = tk.Button(root, text="Upload", command=self.upload_resume)
-        self.requirements_label = tk.Label(root, text="Enter Job Requirements:")
-        self.requirements_entry = tk.Text(root, width=50, height=10)  # Use Text widget for larger text area
-        self.score_button = tk.Button(root, text="Calculate Score", command=self.calculate_score)
-        self.result_label = tk.Label(root, text="Score:")
-        self.reset_button = tk.Button(root, text="Reset", command=self.reset_text)  # Add reset button
-
-        # Layout widgets
-        self.file_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        self.upload_button.grid(row=0, column=1, padx=10, pady=10, sticky="w")
-        self.requirements_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
-        self.requirements_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w", columnspan=2)  # Span 2 columns
-        self.score_button.grid(row=2, column=0, padx=10, pady=10)
-        self.reset_button.grid(row=2, column=1, padx=10, pady=10)
-        self.result_label.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+    def __init__(self):
+        self.resume_text = None
 
     def upload_resume(self):
-        file_path = filedialog.askopenfilename()
-        if file_path:
+        uploaded_file = st.file_uploader("Upload Resume", type=["pdf"])
+        if uploaded_file is not None:
             try:
-                # Use PyMuPDF to read the PDF file
-                doc = fitz.open(file_path)
+                # Read the uploaded PDF file as binary data
+                pdf_reader = PyPDF2.PdfFileReader(uploaded_file)
                 text = ""
-                for page in doc:
-                    text += page.get_text()
+                for page_num in range(pdf_reader.numPages):
+                    page = pdf_reader.getPage(page_num)
+                    text += page.extractText()
                 self.resume_text = text
             except Exception as e:
-                self.result_label.config(text=f"Error reading resume: {str(e)}")
+                st.error(f"Error reading resume: {str(e)}")
                 self.resume_text = None
 
-    def calculate_score(self):
-        if hasattr(self, 'resume_text') and self.resume_text:
-            requirements = self.requirements_entry.get("1.0", "end-1c").lower()  # Get all text from Text widget
+    def calculate_score(self, requirements):
+        if self.resume_text:
             # Perform matching logic between resume text and job requirements
             score = self.match_requirements(self.resume_text, requirements)
-            self.result_label.config(text=f"Score: {score}")
+            st.success(f"Score: {score}")
         else:
-            self.result_label.config(text="No resume uploaded or reading error occurred.")
+            st.warning("No resume uploaded or reading error occurred.")
 
     def match_requirements(self, resume_text, requirements):
         # Example matching logic (dummy implementation)
@@ -56,10 +36,22 @@ class ApplicantTrackingSystem:
                 score += 1
         return score
 
-    def reset_text(self):
-        self.requirements_entry.delete("1.0", "end")  # Delete all text from Text widget
+# Instantiate the ApplicantTrackingSystem class
+ats = ApplicantTrackingSystem()
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ApplicantTrackingSystem(root)
-    root.mainloop()
+# Streamlit app layout
+st.title("Applicant Tracking System")
+st.sidebar.title("Options")
+
+# Sidebar widgets
+with st.sidebar:
+    ats.upload_resume()
+
+# Main content
+st.header("Enter Job Requirements:")
+requirements = st.text_area("Enter job requirements here", height=200)
+
+if st.button("Calculate Score"):
+    ats.calculate_score(requirements)
+
+st.sidebar.text("By: PIYUSH-MISHRA-00")
