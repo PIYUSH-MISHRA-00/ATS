@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
-import fitz # Import PyMuPDF
+import fitz  # Import PyMuPDF
 
 class ApplicantTrackingSystem:
     def __init__(self, root):
@@ -11,16 +11,18 @@ class ApplicantTrackingSystem:
         self.file_label = tk.Label(root, text="Upload Resume:")
         self.upload_button = tk.Button(root, text="Upload", command=self.upload_resume)
         self.requirements_label = tk.Label(root, text="Enter Job Requirements:")
-        self.requirements_entry = tk.Entry(root, width=50)
+        self.requirements_entry = tk.Text(root, width=50, height=10)  # Use Text widget for larger text area
         self.score_button = tk.Button(root, text="Calculate Score", command=self.calculate_score)
         self.result_label = tk.Label(root, text="Score:")
+        self.reset_button = tk.Button(root, text="Reset", command=self.reset_text)  # Add reset button
 
         # Layout widgets
         self.file_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
         self.upload_button.grid(row=0, column=1, padx=10, pady=10, sticky="w")
         self.requirements_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
-        self.requirements_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w")
-        self.score_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+        self.requirements_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w", columnspan=2)  # Span 2 columns
+        self.score_button.grid(row=2, column=0, padx=10, pady=10)
+        self.reset_button.grid(row=2, column=1, padx=10, pady=10)
         self.result_label.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
     def upload_resume(self):
@@ -39,7 +41,7 @@ class ApplicantTrackingSystem:
 
     def calculate_score(self):
         if hasattr(self, 'resume_text') and self.resume_text:
-            requirements = self.requirements_entry.get().lower()
+            requirements = self.requirements_entry.get("1.0", "end-1c").lower()  # Get all text from Text widget
             # Perform matching logic between resume text and job requirements
             score = self.match_requirements(self.resume_text, requirements)
             self.result_label.config(text=f"Score: {score}")
@@ -53,6 +55,9 @@ class ApplicantTrackingSystem:
             if word in resume_text:
                 score += 1
         return score
+
+    def reset_text(self):
+        self.requirements_entry.delete("1.0", "end")  # Delete all text from Text widget
 
 if __name__ == "__main__":
     root = tk.Tk()
