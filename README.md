@@ -1,3 +1,4 @@
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 # ATS (Applicant Tracking System)
 
 ATS is a resume parser and Applicant Tracker System designed for checking and scoring resumes against job requirements. It streamlines the recruitment process by automating the initial screening of resumes and evaluating candidates based on specified criteria.
@@ -40,3 +41,6 @@ streamlit run ATS.py
 Upload resumes in PDF format and enter job requirements using the provided interface.
 Click the "Calculate Score" button to evaluate candidates against the job requirements.
 View the calculated scores and make informed decisions about candidate suitability.
+
+# Link to Docker Image
+[Link to Docker Image](https://hub.docker.com/r/piyushmishradocker/ats)
