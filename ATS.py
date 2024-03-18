@@ -10,11 +10,11 @@ class ApplicantTrackingSystem:
         if uploaded_file is not None:
             try:
                 # Read the uploaded PDF file as binary data
-                pdf_reader = PyPDF2.PdfFileReader(uploaded_file)
+                pdf_reader = PyPDF2.PdfReader(uploaded_file)
                 text = ""
-                for page_num in range(pdf_reader.numPages):
-                    page = pdf_reader.getPage(page_num)
-                    text += page.extractText()
+                for page_num in range(len(pdf_reader.pages)):
+                    page = pdf_reader.pages[page_num]
+                    text += page.extract_text()
                 self.resume_text = text
             except Exception as e:
                 st.error(f"Error reading resume: {str(e)}")
