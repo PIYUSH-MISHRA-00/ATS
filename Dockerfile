@@ -1,5 +1,5 @@
-# Use Python base image
-FROM python:3.12
+# Use Python 3.10 slim-buster base image
+FROM python:3.10-slim-buster
 
 # Set working directory in the container
 WORKDIR /app
@@ -10,10 +10,10 @@ COPY . /app/
 # Install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    ghostscript && \
+    ghostscript python3-pip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir -r requirements.txt
+    pip3 install --no-cache-dir -r requirements.txt
 
 # Expose port 8501 to the outside world
 EXPOSE 8501
