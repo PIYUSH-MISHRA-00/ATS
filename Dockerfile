@@ -1,23 +1,22 @@
-# Use official Python runtime as the base image
-FROM python:3.9-slim
-
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PATH="/scripts:${PATH}"
+# Use Python base image
+FROM python:3.12
 
 # Set working directory in the container
 WORKDIR /app
 
-# Copy only the necessary files to the container
-COPY requirements.txt /app/requirements.txt
-COPY ATS.py /app/ATS.py
+# Copy the current directory contents into the container at /app
+COPY . /app/
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ghostscript && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Expose the port where Streamlit will run
+# Expose port 8501 to the outside world
 EXPOSE 8501
 
 # Command to run the Streamlit app
-CMD ["streamlit", "run", "ATS.py"]
+CMD ["streamlit", "run", "--server.port", "8501", "ATS.py"]
